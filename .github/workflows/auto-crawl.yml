@@ -1,0 +1,54 @@
+name: Auto Generate Surge Rules
+
+on:
+  schedule:
+    # 每天凌晨2点运行
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # 允许手动触发
+  push:
+    branches: [ main ]
+
+# 添加权限配置
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  generate-rules:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4 lxml
+        
+    - name: Run main script
+      run: |
+        python main.py
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: surge-rules
+        path: |
+          Rule/Sexyreject.list
+          domains.json
+        
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add Rule/ domains.json
+        git diff --quiet && git diff --staged --quiet || git commit -m "Auto update: $(date +'%Y-%m-%d %H:%M:%S')"
+        git push 
