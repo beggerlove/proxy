@@ -36,10 +36,10 @@ sudo apt install caddy
 > 请将 `sub.xxxxx.xyz` 替换为你自己的域名。
 
 ```bash
-cat << EOF | sudo tee /etc/caddy/Caddyfile
+cat << EOF > /etc/caddy/Caddyfile
 sub.xxxxx.xyz {
     reverse_proxy 127.0.0.1:3001
-}
+    }
 EOF
 ```
 
