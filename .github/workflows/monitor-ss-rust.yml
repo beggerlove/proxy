@@ -17,13 +17,14 @@ jobs:
         run: sudo timedatectl set-timezone Asia/Shanghai
       - name: Download ss-rust.sh
         run: |
-          curl -sSL -o ss-rust.sh https://raw.githubusercontent.com/xOS/Shadowsocks-Rust/refs/heads/master/ss-rust.sh
+          mkdir -p Shadowsocks-Rust
+          curl -sSL -o Shadowsocks-Rust/ss-rust.sh https://raw.githubusercontent.com/xOS/Shadowsocks-Rust/refs/heads/master/ss-rust.sh
       - name: Commit and push if updated
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if [[ `git status --porcelain ss-rust.sh` ]]; then
-            git add ss-rust.sh
+          if [[ `git status --porcelain Shadowsocks-Rust/ss-rust.sh` ]]; then
+            git add Shadowsocks-Rust/ss-rust.sh
             git commit -m 'chore: update ss-rust.sh from upstream'
             git push
           else
