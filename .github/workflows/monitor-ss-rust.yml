@@ -17,13 +17,15 @@ jobs:
         run: |
           curl -sSL -o ss-rust.sh https://raw.githubusercontent.com/xOS/Shadowsocks-Rust/refs/heads/master/ss-rust.sh
       - name: Commit and push if updated
+        env:
+          PAT: ${{ secrets.PAT }}
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           if [[ `git status --porcelain ss-rust.sh` ]]; then
             git add ss-rust.sh
             git commit -m 'chore: update ss-rust.sh from upstream'
-            git push
+            git push https://x-access-token:${PAT}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
           else
             echo "No update detected."
           fi 
