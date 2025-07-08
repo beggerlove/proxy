@@ -10,7 +10,7 @@ export PATH
 #=================================================
 
 # 当前脚本版本号
-sh_ver="1.5.0"
+sh_ver="1.5.1"
 
 # Shadowsocks Rust 相关路径
 SS_Folder="/etc/ss-rust"
