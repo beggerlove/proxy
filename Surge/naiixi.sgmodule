@@ -1,0 +1,8 @@
+#!name=Naiixi Cookie 捕获模块
+#!desc=自动捕获 Naiixi 登录 Cookie 并通知输出完整格式
+
+[Script]
+Naiixi 捕获 Cookie = type=http-request,pattern=^https:\/\/naiixi\.com\/(signinbyemail|Shadowsockes|gettraffic)\.aspx.*,script-path=https://raw.githubusercontent.com/beggerlove/proxy/refs/heads/master/Surge/naiixi_cookie_notify.js,requires-body=false
+
+[MITM]
+hostname = %APPEND% naiixi.com
