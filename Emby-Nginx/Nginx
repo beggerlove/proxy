@@ -1,0 +1,41 @@
+server {
+    listen 443 ssl http2;
+    server_name emby.yourdomain.com;
+
+    # SSL证书路径（需替换为你自己的证书路径）
+    ssl_certificate /etc/letsencrypt/live/emby.yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/emby.yourdomain.com/privkey.pem;
+    ssl_session_timeout 5m;
+
+    # 安全头
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+
+    # 禁止直接用 IP 访问
+    if ($host ~ ^\d+\.\d+\.\d+\.\d+$) {
+        return 404;
+    }
+
+    # 防止直接访问根路径
+    location = / {
+        return 502;
+    }
+
+    # 主反代逻辑
+    location / {
+        proxy_pass http://emby.example.com:443;
+
+        proxy_set_header Host emby.example.com;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Server $host;
+
+        proxy_buffering off;
+
+        # 禁止源站重定向，保证流量走代理
+        proxy_redirect off;
+    }
+}

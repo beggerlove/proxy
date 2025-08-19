@@ -1,0 +1,31 @@
+name: Clean Commit History
+
+on:
+  workflow_dispatch:     # 只允许手动触发
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      FORCE_CLEAN: true  # 启用强制清理模式
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests pytz
+
+      - name: Auto clean commit history
+        run: |
+          chmod +x clean_commits.sh
+          ./clean_commits.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }} 

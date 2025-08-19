@@ -1,0 +1,39 @@
+name: Adblock to Surge Rule
+
+on:
+  schedule:
+    - cron: '0 */8 * * *'  # 每8小时自动运行一次
+  workflow_dispatch:       # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      ADBLOCK_SOURCE_URL: ${{ secrets.ADBLOCK_SOURCE_URL }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests pytz
+
+      - name: Run conversion script
+        run: python convert_adblock_to_surge.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add Rule/Adblocker.list
+          git commit -m "Update Surge rules from Adblock" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }} 
